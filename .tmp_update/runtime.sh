@@ -17,7 +17,7 @@ export HELPER_FUNCTIONS="/mnt/SDCARD/.tmp_update/scripts/helperFunctions.sh"
 
 mkdir /var/lib /var/lib/alsa ### We create the directories that by default are not included in the system.
 mount -o bind "/mnt/SDCARD/.tmp_update/lib" /var/lib ###We mount the folder that includes the alsa configuration, just as the system should include it.
-mount -o bind /mnt/SDCARD/miyoo/app /usr/miyoo/bin
+mount -o bind /mnt/SDCARD/miyoo/app /usr/miyoo/app
 mount -o bind /mnt/SDCARD/miyoo/lib /usr/miyoo/lib
 mount -o bind /mnt/SDCARD/miyoo/res /usr/miyoo/res
 mount -o bind "/mnt/SDCARD/.tmp_update/etc/profile" /etc/profile
@@ -44,8 +44,7 @@ else
     touch /tmp/wifion
     log_message "WiFi turned on"
 fi
-killall -9 main
-
+kill_images
 # Syncthing Insertion Here (Do not remove)
 
 # Checks if quick-resume is active and runs it if not returns to this point.
@@ -87,12 +86,12 @@ fi
 
 
 lcd_init 1
-show "${SDCARD_PATH}/.tmp_update/res/installing.png" &
+show_image "${SDCARD_PATH}/.tmp_update/res/installing.png"
 
 "${SCRIPTS_DIR}/firstboot.sh"
 log_message "First boot script executed"
 
-killall -9 show
+kill_images
 swapon -p 40 "${SWAPFILE}"
 log_message "Swap file activated"
 
@@ -104,10 +103,7 @@ log_message "Swap file activated"
 /mnt/SDCARD/.tmp_update/scripts/low_power_warning.sh
 /mnt/SDCARD/.tmp_update/scripts/checkfaves.sh &
 log_message "Initial setup scripts executed"
-
-killall -9 show
-
-
+kill_images
 
 
 # start main loop
