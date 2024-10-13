@@ -11,7 +11,16 @@ connect_services() {
 		if ifconfig wlan0 | grep -qE "inet |inet6 "; then
 			
 			# Sync Device Time to Network Time
-			ntpd -n -q -p pool.ntp.org	 
+			ntpd -n -q -p pool.ntp.org     
+			
+			# Adjust time for timezone simulation (add or subtract hours)
+			timezone_offset=$(cat /mnt/SDCARD/spruce/settings/timezone_offset 2>/dev/null)
+			if [ -n "$timezone_offset" ]; then
+				current_time=$(date +%s)
+				adjusted_time=$((current_time + timezone_offset * 3600))
+				date -s "@$adjusted_time"
+				log_message "Network services: Adjusted time by $timezone_offset hours"
+			fi
 			
 			# Sync RTC to Device Time
 			if flag_check "RTCSync" > /dev/null; then

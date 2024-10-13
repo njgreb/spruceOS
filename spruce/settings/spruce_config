@@ -8,6 +8,7 @@ $LCD=/mnt/SDCARD/spruce/scripts/applySetting/LEDon.sh$
 $RECENTS=/mnt/SDCARD/spruce/scripts/applySetting/recentsTile.sh$
 $SSH=/mnt/SDCARD/spruce/scripts/applySetting/SSH.sh$
 $SFTPGO=/mnt/SDCARD/spruce/scripts/applySetting/sftpgo.sh$
+$TIMEZONE=/mnt/SDCARD/spruce/scripts/applySetting/timeZone.sh$
 
 # the lines below define a group, with group name and optional output option file
 [Game Switcher\[GS\]] [/mnt/SDCARD/spruce/flags/gs_options]
@@ -35,6 +36,7 @@ $SFTPGO=/mnt/SDCARD/spruce/scripts/applySetting/sftpgo.sh$
 @"User: root Password: tina"
 [System]
 ""   "Blue LED mode" "||" "Always on|On in menu only|Always off" "$LCD$ check" "$LCD$ on|$LCD$ menu|$LCD$ off"
+"" "Timezone offset" "|" "UTC0|UTC+1|UTC+2|UTC+3|UTC+4|UTC+5|UTC+6|UTC+7|UTC+8|UTC+9|UTC+10|UTC+11|UTC+12|UTC-1|UTC-2|UTC-3|UTC-4|UTC-5|UTC-6|UTC-7|UTC-8|UTC-9|UTC-10|UTC-11|UTC-12" "$TIMEZONE$ check" "$TIMEZONE$ UTC0|$TIMEZONE$ UTC+1|$TIMEZONE$ UTC+2|$TIMEZONE$ UTC+3|$TIMEZONE$ UTC+4|$TIMEZONE$ UTC+5|$TIMEZONE$ UTC+6|$TIMEZONE$ UTC+7|$TIMEZONE$ UTC+8|$TIMEZONE$ UTC+9|$TIMEZONE$ UTC+10|$TIMEZONE$ UTC+11|$TIMEZONE$ UTC+12|$TIMEZONE$ UTC-1|$TIMEZONE$ UTC-2|$TIMEZONE$ UTC-3|$TIMEZONE$ UTC-4|$TIMEZONE$ UTC-5|$TIMEZONE$ UTC-6|$TIMEZONE$ UTC-7|$TIMEZONE$ UTC-8|$TIMEZONE$ UTC-9|$TIMEZONE$ UTC-10|$TIMEZONE$ UTC-11|$TIMEZONE$ UTC-12"
 "-e" "Show recent games in main menu" "|" "on|off" "$CHECK$ recentsTile" "$RECENTS$|$RECENTS$"
 "-f" "Enable RetroArch expert mode" "|" "on|off" "on"
 [Available Apps]
