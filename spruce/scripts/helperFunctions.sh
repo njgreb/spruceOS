@@ -26,6 +26,7 @@ INOTIFY="/mnt/SDCARD/.tmp_update/bin/inotify.elf"
 # Export for enabling SSL support in CURL
 export SSL_CERT_FILE=/mnt/SDCARD/miyoo/app/ca-certificates.crt
 
+# Key
 # exports needed so we can refer to buttons by more memorable names
 export B_LEFT="key 1 105"
 export B_RIGHT="key 1 106"
@@ -56,10 +57,11 @@ export B_MENU="key 1 1"          # surprisingly functions like a regular button
 # Call this just by having "acknowledge" in your script
 # This will pause until the user presses the A, B, or Start button
 acknowledge() {
-    messages_file="/var/log/messages"
+    local messages_file="/var/log/messages"
     echo "ACKNOWLEDGE $(date +%s)" >>"$messages_file"
 
     while true; do
+        $INOTIFY "$messages_file"
         last_line=$(tail -n 1 "$messages_file")
 
         case "$last_line" in
@@ -68,8 +70,6 @@ acknowledge() {
             break
             ;;
         esac
-
-        sleep 0.3
     done
 }
 
@@ -440,6 +440,32 @@ log_message() {
     fi
 
     echo "$message"
+}
+
+scaling_min_freq=480000 ### default value, may be overridden in specific script
+set_smart() {
+	cores_online
+	echo conservative > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+	echo 30 > /sys/devices/system/cpu/cpufreq/conservative/down_threshold
+	echo 70 > /sys/devices/system/cpu/cpufreq/conservative/up_threshold
+	echo 3 > /sys/devices/system/cpu/cpufreq/conservative/freq_step
+	echo 1 > /sys/devices/system/cpu/cpufreq/conservative/sampling_down_factor
+	echo 400000 > /sys/devices/system/cpu/cpufreq/conservative/sampling_rate
+	echo 200000 > /sys/devices/system/cpu/cpufreq/conservative/sampling_rate_min
+	echo "$scaling_min_freq" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+	log_message "CPU Mode set to SMART"
+}
+
+set_performance() {
+	/mnt/SDCARD/App/utils/utils "performance" 4 1344 384 1080 1	
+	log_message "CPU Mode set to PERFORMANCE"
+
+}
+
+set_overclock() {
+	/mnt/SDCARD/App/utils/utils "performance" 4 1512 384 1080 1
+	log_message "CPU Mode set to OVERCLOCK"
+
 }
 
 # Call with
