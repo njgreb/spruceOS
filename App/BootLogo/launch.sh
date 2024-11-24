@@ -3,10 +3,10 @@
 
 LOGO_NAME="bootlogo"
 PROCESSED_NAME="bootlogo_processed.bmp"
-TEMP_BMP="temp_logo.bmp" # Nome temporaneo per conversione
-MAX_SIZE=62234 # Limite massimo dimensione file (byte)
+TEMP_BMP="temp_logo.bmp"
+MAX_SIZE=62234
 DIR="$(dirname "$0")"
-cd "$DIR"
+cd "$DIR" || exit 1
 
 # Function for user messages
 display_message() {
@@ -21,7 +21,6 @@ elif [ -f "${LOGO_PATH}.png" ]; then
     LOGO_PATH="${LOGO_PATH}.png"
 else
     echo "Error: Neither $LOGO_NAME.bmp nor $LOGO_NAME.png exist in the directory: $DIR"
-    echo "Tip: Copy the appropriate file to the directory."
     display_message "missing"
     exit 1
 fi
@@ -30,9 +29,9 @@ fi
 EXTENSION="${LOGO_PATH##*.}"
 if [ "$EXTENSION" != "bmp" ]; then
     echo "Converting image to BMP format..."
-    ffmpeg -i "$LOGO_PATH" -vf "format=bmp" "$TEMP_BMP" > /dev/null 2>&1
+    ffmpeg -i "$LOGO_PATH" -vf "scale='if(gt(iw/ih,640/480),640,-1)':'if(gt(iw/ih,640/480),-1,480)',pad=640:480:(640-iw)/2:(480-ih)/2:black" -pix_fmt bgr24 "$TEMP_BMP" > /dev/null 2>&1
     if [ $? -ne 0 ]; then
-        echo "Error: Unable to convert image to BMP format."
+        echo "Error: Unable to convert image to BMP format. Ensure FFmpeg is installed and the image path is correct."
         display_message "error"
         exit 1
     fi
@@ -41,7 +40,7 @@ fi
 
 # Image conversion: rotation, resizing, compression
 echo "Processing image..."
-ffmpeg -i "$LOGO_PATH" -vf "transpose=0,scale=480:640" -pix_fmt bgra "$PROCESSED_NAME" > /dev/null 2>&1
+ffmpeg -i "$LOGO_PATH" -vf "transpose=2" -pix_fmt bgra "$PROCESSED_NAME" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "Error: Unable to process image with FFmpeg."
     display_message "error"
