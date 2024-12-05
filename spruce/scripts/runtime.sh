@@ -16,32 +16,43 @@ rotate_logs
 log_file="/mnt/SDCARD/Saves/spruce/spruce.log"
 
 cores_online &
-echo mmc0 >/sys/devices/platform/sunxi-led/leds/led1/trigger
-echo L,L2,R,R2,X,A,B,Y > /sys/module/gpio_keys_polled/parameters/button_config
-SETTINGS_FILE="/config/system.json"
-SWAPFILE="/mnt/SDCARD/cachefile"
+
+if [ "$DEVICE" = "A30"]; then 
+    echo mmc0 >/sys/devices/platform/sunxi-led/leds/led1/trigger
+    echo L,L2,R,R2,X,A,B,Y > /sys/module/gpio_keys_polled/parameters/button_config
+    SETTINGS_FILE="/config/system.json"
+    SWAPFILE="/mnt/SDCARD/cachefile"
+fi
+
 SDCARD_PATH="/mnt/SDCARD"
 SCRIPTS_DIR="${SDCARD_PATH}/spruce/scripts"
 BIN_DIR="${SDCARD_PATH}/spruce/bin"
 
-export SYSTEM_PATH="${SDCARD_PATH}/miyoo"
-export PATH="$SYSTEM_PATH/app:${PATH}"
+if [ "$DEVICE" = "SmartPro"]; then
+    export SYSTEM_PATH="${SDCARD_PATH}/System"
+    export PATH="$SYSTEM_PATH/bin:${PATH}"
+else # device is A30
+    export SYSTEM_PATH="${SDCARD_PATH}/miyoo"
+    export PATH="$SYSTEM_PATH/app:${PATH}"
+fi
+
 export LD_LIBRARY_PATH="$SYSTEM_PATH/lib:${LD_LIBRARY_PATH}"
 export HOME="${SDCARD_PATH}"
 export HELPER_FUNCTIONS="/mnt/SDCARD/spruce/scripts/helperFunctions.sh"
 
-# Create directories and mount in parallel
-(
-    mkdir -p /var/lib/alsa
-    mount -o bind "/mnt/SDCARD/miyoo/var/lib" /var/lib &
-    mount -o bind /mnt/SDCARD/miyoo/app /usr/miyoo/app &
-    mount -o bind /mnt/SDCARD/miyoo/lib /usr/miyoo/lib &
-    mount -o bind /mnt/SDCARD/miyoo/res /usr/miyoo/res &
-    mount -o bind "/mnt/SDCARD/miyoo/etc/profile" /etc/profile &
-    wait
-)
-
-lcd_init 1
+if [ "$DEVICE" = "A30"]; then
+    # Create directories and mount in parallel
+    (
+        mkdir -p /var/lib/alsa
+        mount -o bind "/mnt/SDCARD/miyoo/var/lib" /var/lib &
+        mount -o bind /mnt/SDCARD/miyoo/app /usr/miyoo/app &
+        mount -o bind /mnt/SDCARD/miyoo/lib /usr/miyoo/lib &
+        mount -o bind /mnt/SDCARD/miyoo/res /usr/miyoo/res &
+        mount -o bind "/mnt/SDCARD/miyoo/etc/profile" /etc/profile &
+        wait
+    )
+    lcd_init 1
+fi
 
 # Stop NTPD
 nice -n -18 sh -c '/etc/init.d/sysntpd stop && /etc/init.d/ntpd stop' > /dev/null 2>&1 &

@@ -28,6 +28,20 @@
 # Gain access to the helper variables by adding this to the top of your script:
 # . /mnt/SDCARD/spruce/scripts/helperFunctions.sh
 
+# Detect device model:
+INFO=$(cat /proc/cpuinfo 2> /dev/null)
+case $INFO in
+*"TG5040"*)
+    DEVICE="SmartPro"
+    ;;
+*"TG3040"*)
+    DEVICE="Brick"
+    ;;
+*) # assume A30 otherwise
+    DEVICE="A30"
+    ;;
+esac
+
 DISPLAY_TEXT_FILE="/mnt/SDCARD/spruce/bin/display_text.elf"
 FLAGS_DIR="/mnt/SDCARD/spruce/flags"
 
